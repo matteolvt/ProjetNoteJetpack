@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -106,12 +108,12 @@ fun IdentityBlock(name: String, headline: String, modifier: Modifier = Modifier)
             text = name,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.Black
         )
         Text(
             text = headline,
             fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.secondary
+            color = Color.Black
         )
     }
 }
@@ -119,9 +121,7 @@ fun IdentityBlock(name: String, headline: String, modifier: Modifier = Modifier)
 @Composable
 fun Bio(text: String, modifier: Modifier = Modifier) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(8.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = text,
@@ -145,13 +145,11 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
 fun Skills(label: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
             text = label,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = Color.Black,
             fontSize = 14.sp
         )
     }
@@ -160,7 +158,6 @@ fun Skills(label: String, modifier: Modifier = Modifier) {
 @Composable
 fun PillButton(
     label: String,
-    a11yLabel: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -168,11 +165,10 @@ fun PillButton(
         modifier = modifier
             .fillMaxWidth(0.8f)
             .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .background(Color.LightGray)
             .clickable(onClick = onClick)
             .semantics {
                 role = Role.Button
-                contentDescription = a11yLabel
             }
             .padding(16.dp),
         contentAlignment = Alignment.Center
@@ -180,7 +176,7 @@ fun PillButton(
         Text(
             text = label,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSecondaryContainer
+            color = Color.Black
         )
     }
 }
@@ -195,7 +191,13 @@ fun ContactLinks(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = onContact, modifier = Modifier.fillMaxWidth(0.8f)) {
+        Button(
+            onClick = onContact, modifier = Modifier.fillMaxWidth(0.8f),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.LightGray,
+                contentColor = Color.Black
+            )
+        ) {
             Text("Me contacter")
         }
 
@@ -203,23 +205,7 @@ fun ContactLinks(
 
         PillButton(
             label = "Voir le portfolio",
-            a11yLabel = "Voir le portfolio de Studio 19.21",
             onClick = onPortfolio
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Profil")
-@Composable
-private fun ProfileScreenPreview() {
-    ProjetNoteTheme {
-        ProfileScreen(
-            name = "Mattéo Livrozet",
-            headline = "Apprenti front-end @ CA-TS",
-            bio = "Mastère Ingénierie du Web à l'ESGI, en alternance sur une équipe Angular.",
-            skills = listOf("Angular", "RxJS", "TypeScript", "Tailwind"),
-            onContact = {},
-            onPortfolio = {}
         )
     }
 }
