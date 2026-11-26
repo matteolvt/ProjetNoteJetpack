@@ -133,7 +133,12 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            ProfilePicture()
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                ProfilePicture()
+            }
         }
         item {
             IdentityBlock(name = name, headline = headline)
@@ -196,13 +201,30 @@ fun ContactField(
 fun ProfilePicture(
     modifier: Modifier = Modifier
 ) {
-    Image(
-        painter = painterResource(id = android.R.drawable.ic_menu_gallery),
-        contentDescription = "Photo de profil du développeur",
-        modifier = modifier
-            .size(96.dp)
-            .clip(CircleShape)
-    )
+    Box(
+        modifier = modifier.size(96.dp)
+    ) {
+        Image(
+            painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+            contentDescription = "Photo de profil du développeur",
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(CircleShape)
+        )
+
+        Surface(
+            modifier = Modifier.align(Alignment.TopEnd),
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.primary
+        ) {
+            Text(
+                text = "Dispo",
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }
 }
 
 @Composable
