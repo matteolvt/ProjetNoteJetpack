@@ -1,75 +1,43 @@
-# Profil développeur Compose
+# ProjetNote - Profil développeur en Jetpack Compose
 
-**Description :**
-Petite application Android développée avec Jetpack Compose. Elle affiche une fiche de profil : nom et intitulé, bio, liste de compétences techniques, puis deux actions (un bouton « Me contacter » et un bouton personnalisé « Voir le portfolio »). Les callbacks des deux actions sont pour l'instant des `TODO` : les boutons réagissent au clic mais ne déclenchent encore rien.
+## Description
 
-**Notions utilisées :**
+ProjetNote est une application Android qui affiche une carte de profil pour un développeur front-end. Elle présente le nom, le rôle, une courte bio, des compétences techniques, une liste d'expériences, des informations de contact et deux boutons d'action. Toutes les données sont locales, codées dans le projet. L'application ne fait aucun appel réseau et ne conserve aucune donnée.
 
-- Fonctions composables
-- Paramètres de composables
-- Modifiers et chaînage
-- Padding externe / padding interne
-- Callbacks d'actions
-- Preview
-- Accessibilité de base (`semantics`, `contentDescription`)
+## Composants Compose utilisés
 
-### Réponses aux questions :
+- `Text` : titres, bio, libellés et contenu des cartes
+- `Button` : boutons « Me contacter » et « Voir le portfolio »
+- `Icon` : icônes email et localisation dans les champs de contact
+- `Image` : photo de profil placeholder
+- `Card` : cartes des expériences (`ExperienceCard`)
+- `OutlinedTextField` : champs email et localisation, en lecture seule (`ContactField`)
+- `Surface` : bio, compétences (`Skill`) et badge « Dispo »
+- `LazyColumn` et `items` : liste principale et liste des expériences
 
-1. **Quels composables avez-vous créés ?**
-   J'ai créé 7 composables : `ProfileScreen` (écran principal), `IdentityBlock` (nom et intitulé), `Bio` (texte de présentation), `SectionLabel` (titre de section), `Skills` (bulle d'une compétence), `PillButton` (bouton cliquable personnalisé) et `ContactLinks` (regroupe le bouton « Me contacter » et le `PillButton`).
+## Layouts utilisés
 
-2. **Quel composable représente l'écran principal ?**
-   C'est `ProfileScreen`. Il assemble la page en appelant tous les autres composables dans une `Column`. `MainActivity` l'appelle dans le `Scaffold` et lui fournit les données.
+- `LazyColumn` : structure verticale défilante de l'écran entier
+- `Column` : organisation verticale à l'intérieur des blocs (identité, contact, cartes)
+- `Row` : alignement horizontal des compétences
+- `Box` : superposition du badge « Dispo » sur la photo, et centrage de la photo
+- `Spacer` : espacements ponctuels
+- `Surface` : zones visuelles colorées cohérentes avec le thème
 
-3. **Où utilisez-vous un padding externe ?**
-   Dans `ProfileScreen`, sur la `Column` principale : `Modifier.padding(16.dp)`, qui décolle le contenu des bords de l'écran. On en trouve aussi un dans `SectionLabel` (`padding(bottom = 12.dp)`), qui espace le titre de ce qui le suit, et dans `MainActivity`, où le `innerPadding` du `Scaffold` est passé à `ProfileScreen` pour ne pas passer sous les barres système.
+## Liste affichée avec LazyColumn
 
-4. **Où utilisez-vous un padding interne ?**
-   Dans `Bio`, le `Text` a un `Modifier.padding(16.dp)` à l'intérieur de sa `Surface` : le texte ne colle pas aux bords du fond. Même principe dans `Skills` (`padding(horizontal = 12.dp, vertical = 6.dp)` placé après `.background(...)`) et dans `PillButton` (`padding(16.dp)` placé après `.clickable`, donc la zone cliquable englobe cet espace).
+L'écran entier est une `LazyColumn`, avec un `verticalArrangement` de 16 dp entre les éléments. Chaque section fixe (photo, identité, bio, titres de section, compétences, contact) est un `item { }`. La liste des expériences, elle, est générée par `items(experiences)`, qui parcourt la liste renvoyée par `sampleExperiences()`. Chaque élément est rendu par le composable réutilisable `ExperienceCard`, qui ne dépend que d'un objet `Experience`. Ajouter une expérience revient donc à ajouter un élément à la liste, sans modifier l'interface.
 
-5. **Quel composant reçoit un callback ?**
-   `ContactLinks` reçoit deux callbacks, `onContact` et `onPortfolio`. Il passe le premier au `Button` et le second à `PillButton` (qui le reçoit sous le nom `onClick`). Ces callbacks viennent de plus haut : `MainActivity` les donne à `ProfileScreen`, qui les transmet à `ContactLinks`. Pour l'instant, ils sont vides (`TODO`).
+## Choix de thème
 
-6. **Quelle information d'accessibilité avez-vous ajoutée ?**
-   Sur `PillButton`, qui est un `Box` cliquable et non un vrai bouton, j'ai utilisé `semantics` pour déclarer le rôle de bouton (`role = Role.Button`) et fourni une description pour le lecteur d'écran (`contentDescription = "Voir le portfolio de Studio 19.21"`). Le `Button` Material utilisé pour « Me contacter » porte déjà ces informations nativement.
+Par manque d'inspiration j'ai repris les couleurs du tp, en espérant que cela ne vous dérange pas (de plus elles se rapprochent des couleurs de l'entreprise où je fais mon alternance)
+L'application utilise le thème défini dans `ui/theme/Theme.kt`, avec deux palettes Material 3 : une claire et une sombre. Aucun composable ne code une couleur en dur. Chaque élément prend ses couleurs dans `MaterialTheme.colorScheme` (`background`, `surface`, `onSurface`, `primary`, `onPrimary`, `secondary`, `onSecondary`), ses styles de texte dans `MaterialTheme.typography` et ses formes dans `MaterialTheme.shapes`. Résultat : le même code produit un rendu cohérent en mode clair comme en mode sombre, et les previews `DeveloperProfileLightPreview` et `DeveloperProfileDarkPreview` permettent de le vérifier.
 
-7. **Pourquoi vos composants peuvent-ils être considérés comme réutilisables ?**
-   Aucun ne contient de donnée en dur : texte, listes et callbacks arrivent par paramètres, et tous acceptent un `modifier` pour que le parent puisse ajuster leur taille ou leur placement. La réutilisation est visible dans le code : `SectionLabel` est appelé deux fois avec des textes différents, et `Skills` est appelé une fois par compétence dans la boucle `forEach`. `PillButton` est conçu pour servir à plusieurs actions mais n'est utilisé qu'une seule fois pour l'instant.
+## Capture d'écran
 
-# Profil développeur Compose
+<img width="740" height="806" alt="Capture d’écran 2026-11-26 à 11 17 17" src="https://github.com/user-attachments/assets/92030fda-9426-4d8f-b2e9-01b7e325ed52" />
+<img width="438" height="871" alt="Capture d’écran 2026-11-26 à 11 17 45" src="https://github.com/user-attachments/assets/622d1085-185d-4a91-be5c-701e25c811a6" />
 
-**Description :**
-Petite application Android développée avec Jetpack Compose. Elle affiche une fiche de profil : nom et intitulé, bio, liste de compétences techniques, puis deux actions (un bouton « Me contacter » et un bouton personnalisé « Voir le portfolio »). Les callbacks des deux actions sont pour l'instant des `TODO` : les boutons réagissent au clic mais ne déclenchent encore rien.
+## Notions du chapitre Compose UI réutilisées
 
-**Notions utilisées :**
-
-- Fonctions composables
-- Paramètres de composables
-- Modifiers et chaînage
-- Padding externe / padding interne
-- Callbacks d'actions
-- Preview
-- Accessibilité de base (`semantics`, `contentDescription`)
-
-### Réponses aux questions :
-
-1. **Quels composables avez-vous créés ?**
-   J'ai créé 7 composables : `ProfileScreen` (écran principal), `IdentityBlock` (nom et intitulé), `Bio` (texte de présentation), `SectionLabel` (titre de section), `Skills` (bulle d'une compétence), `PillButton` (bouton cliquable personnalisé) et `ContactLinks` (regroupe le bouton « Me contacter » et le `PillButton`).
-
-2. **Quel composable représente l'écran principal ?**
-   C'est `ProfileScreen`. Il assemble la page en appelant tous les autres composables dans une `Column`. `MainActivity` l'appelle dans le `Scaffold` et lui fournit les données.
-
-3. **Où utilisez-vous un padding externe ?**
-   Dans `ProfileScreen`, sur la `Column` principale : `Modifier.padding(16.dp)`, qui décolle le contenu des bords de l'écran. On en trouve aussi un dans `SectionLabel` (`padding(bottom = 12.dp)`), qui espace le titre de ce qui le suit, et dans `MainActivity`, où le `innerPadding` du `Scaffold` est passé à `ProfileScreen` pour ne pas passer sous les barres système.
-
-4. **Où utilisez-vous un padding interne ?**
-   Dans `Bio`, le `Text` a un `Modifier.padding(16.dp)` à l'intérieur de sa `Surface` : le texte ne colle pas aux bords du fond. Même principe dans `Skills` (`padding(horizontal = 12.dp, vertical = 6.dp)` placé après `.background(...)`) et dans `PillButton` (`padding(16.dp)` placé après `.clickable`, donc la zone cliquable englobe cet espace).
-
-5. **Quel composant reçoit un callback ?**
-   `ContactLinks` reçoit deux callbacks, `onContact` et `onPortfolio`. Il passe le premier au `Button` et le second à `PillButton` (qui le reçoit sous le nom `onClick`). Ces callbacks viennent de plus haut : `MainActivity` les donne à `ProfileScreen`, qui les transmet à `ContactLinks`. Pour l'instant, ils sont vides (`TODO`).
-
-6. **Quelle information d'accessibilité avez-vous ajoutée ?**
-   Sur `PillButton`, qui est un `Box` cliquable et non un vrai bouton, j'ai utilisé `semantics` pour déclarer le rôle de bouton (`role = Role.Button`) et fourni une description pour le lecteur d'écran (`contentDescription = "Voir le portfolio de Studio 19.21"`). Le `Button` Material utilisé pour « Me contacter » porte déjà ces informations nativement.
-
-7. **Pourquoi vos composants peuvent-ils être considérés comme réutilisables ?**
-   Aucun ne contient de donnée en dur : texte, listes et callbacks arrivent par paramètres, et tous acceptent un `modifier` pour que le parent puisse ajuster leur taille ou leur placement. La réutilisation est visible dans le code : `SectionLabel` est appelé deux fois avec des textes différents, et `Skills` est appelé une fois par compétence dans la boucle `forEach`. `PillButton` est conçu pour servir à plusieurs actions mais n'est utilisé qu'une seule fois pour l'instant.
+Pour cette application, j'ai réutilisé les notions de base du chapitre : composer des écrans à partir de petites fonctions `@Composable` avec des paramètres, organiser l'affichage avec `Column`, `Row`, `Box` et `Spacer`, afficher du texte et des images, et utiliser `Button` et `Card`. J'ai aussi appliqué la séparation entre données et affichage : `ProfileScreen` reçoit ses valeurs en paramètres, ce qui permet de réutiliser le même composable dans l'activité et dans les previews.
