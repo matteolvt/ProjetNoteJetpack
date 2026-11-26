@@ -17,9 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -51,6 +55,7 @@ class MainActivity : ComponentActivity() {
                         bio = "Je construis des interfaces web avec Angular et je dirige " +
                                 "Studio 19.21, une petite agence web lyonnaise.",
                         skills = listOf("Angular", "RxJS", "TypeScript", "React"),
+                        experiences = sampleExperiences(),
                         onContact = { /* TODO : action de contact */ },
                         onPortfolio = { /* TODO : ouvrir le portfolio */ },
                         modifier = Modifier.padding(innerPadding)
@@ -71,6 +76,7 @@ fun DeveloperProfileDarkPreview() {
             bio = "Je construis des interfaces web avec Angular et je dirige " +
                     "Studio 19.21, une petite agence web lyonnaise.",
             skills = listOf("Angular", "RxJS", "TypeScript", "React"),
+            experiences = sampleExperiences(),
             onContact = { },
             onPortfolio = { }
         )
@@ -87,6 +93,7 @@ fun DeveloperProfileLightPreview() {
             bio = "Je construis des interfaces web avec Angular et je dirige " +
                     "Studio 19.21, une petite agence web lyonnaise.",
             skills = listOf("Angular", "RxJS", "TypeScript", "React"),
+            experiences = sampleExperiences(),
             onContact = { },
             onPortfolio = { }
         )
@@ -99,37 +106,50 @@ fun ProfileScreen(
     headline: String,
     bio: String,
     skills: List<String>,
+    experiences: List<Experience>,
     onContact: () -> Unit,
     onPortfolio: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ProfilePicture()
-
-        IdentityBlock(name = name, headline = headline)
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Bio(text = bio)
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SectionLabel(text = "Compétences techniques")
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            skills.forEach { Skill(label = it) }
+        item {
+            ProfilePicture()
         }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        SectionLabel(text = "Liens et contact")
-        ContactLinks(onContact = onContact, onPortfolio = onPortfolio)
+        item {
+            IdentityBlock(name = name, headline = headline)
+        }
+        item {
+            Bio(text = bio)
+        }
+        item {
+            SectionLabel(text = "Compétences techniques")
+        }
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                skills.forEach { Skill(label = it) }
+            }
+        }
+        item {
+            SectionLabel(text = "Expériences")
+        }
+        items(experiences) { experience ->
+            ExperienceCard(experience = experience)
+        }
+        item {
+            SectionLabel(text = "Liens et contact")
+        }
+        item {
+            ContactLinks(onContact = onContact, onPortfolio = onPortfolio)
+        }
     }
 }
 
@@ -207,6 +227,59 @@ fun Skill(label: String, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSecondary
         )
+    }
+}
+
+data class Experience(
+    val title: String,
+    val company: String,
+    val period: String
+)
+
+fun sampleExperiences(): List<Experience> {
+    return listOf(
+        Experience(
+            title = "Développeur front-end (alternance)",
+            company = "Crédit Agricole Technologies & Services",
+            period = "2025 - aujourd'hui"
+        ),
+        Experience(
+            title = "Fondateur",
+            company = "Studio 19.21",
+            period = "2024 - aujourd'hui"
+        )
+    )
+}
+
+@Composable
+fun ExperienceCard(
+    experience: Experience,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = experience.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = experience.company,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = experience.period,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
     }
 }
 
