@@ -24,7 +24,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -41,6 +44,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.projetnote.ui.theme.ProjetNoteTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +62,8 @@ class MainActivity : ComponentActivity() {
                                 "Studio 19.21, une petite agence web lyonnaise.",
                         skills = listOf("Angular", "RxJS", "TypeScript", "React"),
                         experiences = sampleExperiences(),
+                        email = "matteo@example.com",
+                        location = "Lyon, France",
                         onContact = { /* TODO : action de contact */ },
                         onPortfolio = { /* TODO : ouvrir le portfolio */ },
                         modifier = Modifier.padding(innerPadding)
@@ -77,6 +85,8 @@ fun DeveloperProfileDarkPreview() {
                     "Studio 19.21, une petite agence web lyonnaise.",
             skills = listOf("Angular", "RxJS", "TypeScript", "React"),
             experiences = sampleExperiences(),
+            email = "matteo@example.com",
+            location = "Lyon, France",
             onContact = { },
             onPortfolio = { }
         )
@@ -94,6 +104,8 @@ fun DeveloperProfileLightPreview() {
                     "Studio 19.21, une petite agence web lyonnaise.",
             skills = listOf("Angular", "RxJS", "TypeScript", "React"),
             experiences = sampleExperiences(),
+            email = "matteo@example.com",
+            location = "Lyon, France",
             onContact = { },
             onPortfolio = { }
         )
@@ -107,6 +119,8 @@ fun ProfileScreen(
     bio: String,
     skills: List<String>,
     experiences: List<Experience>,
+    email: String,
+    location: String,
     onContact: () -> Unit,
     onPortfolio: () -> Unit,
     modifier: Modifier = Modifier
@@ -145,12 +159,37 @@ fun ProfileScreen(
             ExperienceCard(experience = experience)
         }
         item {
-            SectionLabel(text = "Liens et contact")
-        }
-        item {
-            ContactLinks(onContact = onContact, onPortfolio = onPortfolio)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SectionLabel(text = "Liens et contact")
+                ContactField(label = "Email", value = email, icon = Icons.Filled.Email)
+                ContactField(
+                    label = "Localisation",
+                    value = location,
+                    icon = Icons.Filled.LocationOn
+                )
+                ContactLinks(onContact = onContact, onPortfolio = onPortfolio)
+            }
         }
     }
+}
+
+@Composable
+fun ContactField(
+    label: String,
+    value: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { },
+        readOnly = true,
+        label = { Text(label) },
+        leadingIcon = {
+            Icon(imageVector = icon, contentDescription = label)
+        },
+        modifier = modifier.fillMaxWidth()
+    )
 }
 
 @Composable
