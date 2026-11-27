@@ -1,43 +1,27 @@
-# ProjetNote - Profil développeur en Jetpack Compose
+# Profil développeur interactif
 
 ## Description
+Dans cette version, l'utilisateur peut voir mes différents projets réalisé, peut chercher un projet en fonction de son titre<img width="183" height="967" alt="Capture d’écran 2026-11-27 à 12 50 57" src="https://github.com/user-attachments/assets/62a986c0-a0a9-429c-bdd7-a2b679a8e5d7" />
+, ses technologies utilisées ou sa description, peut mettre des projets en favoris et filtrer les projets qu'il veut voir (que les projets favoris ou tous les projets).
 
-ProjetNote est une application Android qui affiche une carte de profil pour un développeur front-end. Elle présente le nom, le rôle, une courte bio, des compétences techniques, une liste d'expériences, des informations de contact et deux boutons d'action. Toutes les données sont locales, codées dans le projet. L'application ne fait aucun appel réseau et ne conserve aucune donnée.
+## États gérés par l'application
+Projects (tous les projets), visibleProjects (ceux affichés), searchQuery (le texte de recherche), showOnlyFavorites (le filtre), favoriteProjectIds (les favoris).
 
-## Composants Compose utilisés
+## État local
+Le seul état local est isExpanded, dans ContactSection, parce qu'il ne concerne que l'affichage du bloc contact. Il ne sert qu'à afficher ou masquer le bloc contact, et rememberSaveable le conserve lors d'une rotation de l'écran.
 
-- `Text` : titres, bio, libellés et contenu des cartes
-- `Button` : boutons « Me contacter » et « Voir le portfolio »
-- `Icon` : icônes email et localisation dans les champs de contact
-- `Image` : photo de profil placeholder
-- `Card` : cartes des expériences (`ExperienceCard`)
-- `OutlinedTextField` : champs email et localisation, en lecture seule (`ContactField`)
-- `Surface` : bio, compétences (`Skill`) et badge « Dispo »
-- `LazyColumn` et `items` : liste principale et liste des expériences
+## State Hoisting
+ProfileScreen est stateless parce qu'il ne stocke rien : il reçoit les valeurs à afficher (visibleProjects, searchQuery, showOnlyFavorites, favoriteProjectIds, ainsi que les informations de profil) et les callbacks pour signaler les actions (onSearchQueryChange, onToggleFavoritesFilter, onFavoriteClick). Il ne décide pas comment l'état est conservé : c'est le rôle du ViewModel, branché par ProfileContainer. Il ne contient aucun mutableStateOf pour l'état principal.
 
-## Layouts utilisés
+## ViewModel
+Le ViewModel garde l'état de l'écran et contient la logique de filtrage. Toute modification passe par la fonction commune updateState. Il garde l'état privé, expose un StateFlow en lecture seule, et applyFilters recalcule la liste affichée à chaque changement.
 
-- `LazyColumn` : structure verticale défilante de l'écran entier
-- `Column` : organisation verticale à l'intérieur des blocs (identité, contact, cartes)
-- `Row` : alignement horizontal des compétences
-- `Box` : superposition du badge « Dispo » sur la photo, et centrage de la photo
-- `Spacer` : espacements ponctuels
-- `Surface` : zones visuelles colorées cohérentes avec le thème
+## StateFlow
+Quand l'utilisateur clique, le callback appelle le ViewModel, qui met à jour l'état. Quand un état change, le ViewModel publie le nouvel état dans son StateFlow, le container le collecte avec collectAsState, et Compose redessine l'écran.
 
-## Liste affichée avec LazyColumn
-
-L'écran entier est une `LazyColumn`, avec un `verticalArrangement` de 16 dp entre les éléments. Chaque section fixe (photo, identité, bio, titres de section, compétences, contact) est un `item { }`. La liste des expériences, elle, est générée par `items(experiences)`, qui parcourt la liste renvoyée par `sampleExperiences()`. Chaque élément est rendu par le composable réutilisable `ExperienceCard`, qui ne dépend que d'un objet `Experience`. Ajouter une expérience revient donc à ajouter un élément à la liste, sans modifier l'interface.
-
-## Choix de thème
-
-Par manque d'inspiration j'ai repris les couleurs du tp, en espérant que cela ne vous dérange pas (de plus elles se rapprochent des couleurs de l'entreprise où je fais mon alternance)
-L'application utilise le thème défini dans `ui/theme/Theme.kt`, avec deux palettes Material 3 : une claire et une sombre. Aucun composable ne code une couleur en dur. Chaque élément prend ses couleurs dans `MaterialTheme.colorScheme` (`background`, `surface`, `onSurface`, `primary`, `onPrimary`, `secondary`, `onSecondary`), ses styles de texte dans `MaterialTheme.typography` et ses formes dans `MaterialTheme.shapes`. Résultat : le même code produit un rendu cohérent en mode clair comme en mode sombre, et les previews `DeveloperProfileLightPreview` et `DeveloperProfileDarkPreview` permettent de le vérifier.
+## Organisation du code
+ProfileViewModel gère la recherche, le filtre des favoris et la liste des favoris. ProfileUiState regroupe l'état de l'écran. ProfileContainer relie le ViewModel à l'interface. ProfileScreen affiche l'écran à partir des valeurs et callbacks qu'il reçoit. ProjectCard affiche un projet et son bouton de favori.
 
 ## Capture d'écran
-
-<img width="740" height="806" alt="Capture d’écran 2026-11-26 à 11 17 17" src="https://github.com/user-attachments/assets/92030fda-9426-4d8f-b2e9-01b7e325ed52" />
-<img width="438" height="871" alt="Capture d’écran 2026-11-26 à 11 17 45" src="https://github.com/user-attachments/assets/622d1085-185d-4a91-be5c-701e25c811a6" />
-
-## Notions du chapitre Compose UI réutilisées
-
-Pour cette application, j'ai réutilisé les notions de base du chapitre : composer des écrans à partir de petites fonctions `@Composable` avec des paramètres, organiser l'affichage avec `Column`, `Row`, `Box` et `Spacer`, afficher du texte et des images, et utiliser `Button` et `Card`. J'ai aussi appliqué la séparation entre données et affichage : `ProfileScreen` reçoit ses valeurs en paramètres, ce qui permet de réutiliser le même composable dans l'activité et dans les previews.
+<img width="183" height="966" alt="Capture d’écran 2026-11-27 à 12 52 26" src="https://github.com/user-attachments/assets/675edf41-9425-4e3c-996b-7edce169b8f4" />
+<img width="309" height="815" alt="Capture d’écran 2026-11-27 à 12 54 44" src="https://github.com/user-attachments/assets/a535830c-3ffc-458b-8538-aa36549e0e1c" />
