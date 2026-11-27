@@ -1,7 +1,7 @@
 # Profil développeur interactif
 
 ## Description
-Dans cette version, l'utilisateur peut voir mes différents projets réalisé, peut chercher un projet en fonction de son titre<img width="183" height="967" alt="Capture d’écran 2026-11-27 à 12 50 57" src="https://github.com/user-attachments/assets/62a986c0-a0a9-429c-bdd7-a2b679a8e5d7" />
+Dans cette version, l'utilisateur peut voir mes différents projets réalisé, peut chercher un projet en fonction de son titre
 , ses technologies utilisées ou sa description, peut mettre des projets en favoris et filtrer les projets qu'il veut voir (que les projets favoris ou tous les projets).
 
 ## États gérés par l'application
