@@ -41,6 +41,12 @@ import com.example.projetnote.ui.theme.ProjetNoteTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlin.text.contains
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -285,6 +291,50 @@ fun Skill(label: String, modifier: Modifier = Modifier) {
     }
 }
 
+class ProfileViewModel : ViewModel() {
+
+    private val _uiState = MutableStateFlow(
+        applyFilters(ProfileUiState(projects = sampleProjects()))
+    )
+    val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    private fun applyFilters(state: ProfileUiState): ProfileUiState {
+        val filtered = state.projects
+            .filter { project ->
+                state.searchQuery.isBlank() ||
+                        project.title.contains(state.searchQuery, ignoreCase = true) ||
+                        project.technology.any { it.contains(state.searchQuery, ignoreCase = true) } ||
+                        project.description.contains(state.searchQuery, ignoreCase = true)
+            }
+            .filter { project -> !state.showOnlyFavorites || project.id in state.favoriteProjectIds }
+        return state.copy(visibleProjects = filtered)
+    }
+
+    private fun updateState(transform: (ProfileUiState) -> ProfileUiState) {
+        _uiState.update { current -> applyFilters(transform(current)) }
+    }
+
+    fun onSearchQueryChange(newValue: String) {
+        updateState { it.copy(searchQuery = newValue) }
+    }
+
+    fun onToggleFavoritesFilter() {
+        updateState { it.copy(showOnlyFavorites = !it.showOnlyFavorites) }
+    }
+
+    fun onFavoriteClick(projectId: Int) {
+        updateState { state ->
+            val newFavoriteIds =
+                if (state.favoriteProjectIds.contains(projectId)) {
+                    state.favoriteProjectIds - projectId
+                } else {
+                    state.favoriteProjectIds + projectId
+                }
+            state.copy(favoriteProjectIds = newFavoriteIds)
+        }
+    }
+}
+
 data class Experience(
     val title: String,
     val company: String,
@@ -296,6 +346,14 @@ data class Project(
     val title: String,
     val technology: List<String>,
     val description: String
+)
+
+data class ProfileUiState(
+    val projects: List<Project> = emptyList(),
+    val visibleProjects: List<Project> = emptyList(),
+    val searchQuery: String = "",
+    val showOnlyFavorites: Boolean = false,
+    val favoriteProjectIds: Set<Int> = emptySet()
 )
 
 fun sampleExperiences(): List<Experience> {
@@ -313,7 +371,7 @@ fun sampleExperiences(): List<Experience> {
     )
 }
 
-fun sampleProject() : List<Project> {
+fun sampleProjects() : List<Project> {
     return listOf(
         Project(
             id = 0,
