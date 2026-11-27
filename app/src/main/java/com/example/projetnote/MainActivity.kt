@@ -58,8 +58,8 @@ class MainActivity : ComponentActivity() {
                         experiences = sampleExperiences(),
                         email = "matteo@example.com",
                         location = "Lyon, France",
-                        onContact = { /* TODO : action de contact */ },
-                        onPortfolio = { /* TODO : ouvrir le portfolio */ },
+                        onContact = { /* Pas d'action pour ce TP */},
+                        onPortfolio = { /* Pas d'action pour ce TP */},
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -291,6 +291,13 @@ data class Experience(
     val period: String
 )
 
+data class Project(
+    val id: Int,
+    val title: String,
+    val technology: List<String>,
+    val description: String
+)
+
 fun sampleExperiences(): List<Experience> {
     return listOf(
         Experience(
@@ -302,6 +309,39 @@ fun sampleExperiences(): List<Experience> {
             title = "Fondateur",
             company = "Studio 19.21",
             period = "2024 - aujourd'hui"
+        )
+    )
+}
+
+fun sampleProject() : List<Project> {
+    return listOf(
+        Project(
+            id = 0,
+            title = "Portfolio 3D",
+            technology = listOf("ThreeJS"),
+            description = "Un portfolio en 3D, modélisant un bureau avec un livre dessus. Au clic sur le livre la caméra se met au dessus de celui-là et pour " +
+                    "voir les différents projets, on clique à droite ou à gauche pour naviguer dans le livre."
+        ),
+        Project(
+            id = 1,
+            title = "Studio 19.21",
+            technology = listOf("ReactJS"),
+            description = "Studio 19.21 est une agence web fondée par un ami et moi-même. On a donc décidé de faire notre site vitrine en ReactJS"
+        ),
+        Project(
+            id = 2,
+            title = "Deathless Record",
+            technology = listOf("Symfony"),
+            description = "Deathless Record est un label de musique associatif dijonnais. Lors de mon premier stage en première année j'ai eu comme mission de réaliser " +
+                    "leur site pour le concert qu'ils organisaient, visant à faire découvrir de nouveau artistes."
+        ),
+        Project(
+            id = 3,
+            title = "Shad's Candle",
+            technology = listOf("NextJS","Django"),
+            description = "Shad's Candle est la marque de bougies de ma soeur. Dans le cadre de son activité et de son développement elle m'a donc demandé de lui réaliser un site " +
+                    "ecommerce pour qu'elle puisse vendre ses bougie. Ce fut également le projet que l'on a présentés avec mon binôme pour notre CDA."
+
         )
     )
 }
